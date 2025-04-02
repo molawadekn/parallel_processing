@@ -1,0 +1,66 @@
+@startuml
+skinparam ArrowColor Black
+skinparam ActorFontName Arial
+skinparam ParticipantFontName Arial
+skinparam LabelFontName Arial
+skinparam RectangleFontName Arial
+
+start
+
+:Receive Order;
+:Place order into **Order Queue**;
+
+
+partition "Order Validation Service" {
+    :Consume order from **Order Queue**;
+    if (Is order valid?) then (Yes)
+        :Place order into **Payment Queue**;
+    else (No)
+        :Generate invalid order message;
+        :Place message into **Notification Queue**;
+        stop
+    endif
+}
+
+ 
+partition "Payment Processing Service" {
+    :Consume order from **Payment Queue**;
+    :Process payment;
+    if (Payment successful?) then (Yes)
+        :Place order into **Inventory Queue**;
+    else (No)
+        :Generate payment failure message;
+        :Place message into **Notification Queue**;
+        stop
+    endif
+}
+
+ 
+partition "Inventory Update Service" {
+    :Consume order from **Inventory Queue**;
+    :Update inventory;
+    if (Inventory updated?) then (Yes)
+        :Place order into **Shipping Queue**;
+    else (No)
+        :Generate inventory issue message;
+        :Place message into **Notification Queue**;
+        stop
+    endif
+}
+
+ 
+partition "Shipping Service" {
+    :Consume order from **Shipping Queue**;
+    :Generate shipping details;
+    :Generate shipping confirmation message;
+    :Place message into **Notification Queue**;
+}
+
+
+partition "Notification Service" {
+    :Consume messages from **Notification Queue**;
+    :Send notifications to customers;
+}
+
+end
+@enduml

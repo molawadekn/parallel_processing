@@ -1,0 +1,26 @@
+@startuml
+skinparam rectangle {
+    BackgroundColor<<Customer>> LightBlue
+    BackgroundColor<<OrderProcessing>> LightGreen
+    BackgroundColor<<Service>> LightYellow
+}
+
+actor Customer
+
+rectangle "Order Processing" <<OrderProcessing>> {
+    Customer      --> (Place Order)
+    (Place Order) --> (Validate Order)
+    (Validate Order) --> (Process Payment)
+    (Process Payment) --> (Update Inventory)
+    (Update Inventory) --> (Generate Shipping Details)
+    (Generate Shipping Details) --> Customer : "Send Shipping Details"
+}
+
+rectangle "Services" <<Service>> {
+    (Validate Order) --> (Validation Service)
+    (Process Payment) --> (Payment Service)
+    (Update Inventory) --> (Inventory Service)
+    (Generate Shipping Details) --> (Shipping Service)
+}
+
+@enduml

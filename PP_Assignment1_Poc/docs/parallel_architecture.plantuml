@@ -1,0 +1,48 @@
+@startuml
+skinparam rectangle {
+    BackgroundColor<<Service>> LightYellow
+    BackgroundColor<<Component>> LightGreen
+}
+
+actor Customer
+
+rectangle "Customer Order Placement" as OrderPlacement <<Component>> {
+    Customer --> (Place Order)
+}
+
+rectangle "Load Balancer" as LoadBalancer <<Component>> {
+    OrderPlacement --> LoadBalancer
+}
+
+rectangle "Message Queue" as MessageQueue <<Component>> {
+    LoadBalancer --> MessageQueue : "Manages incoming orders"
+}
+
+rectangle "Order Validation Services" <<Service>> {
+    MessageQueue --> (Order Validation Service 1)
+    MessageQueue --> (Order Validation Service 2)
+    MessageQueue --> (Order Validation Service 3)
+    MessageQueue --> (Order Validation Service N)
+}
+
+rectangle "Payment Processing Services" <<Service>> {
+    (Order Validation Service 1) --> (Payment Processing)
+    (Order Validation Service 2) --> (Payment Processing)
+    (Order Validation Service 3) --> (Payment Processing)
+    (Order Validation Service N) --> (Payment Processing)
+}
+
+rectangle "Inventory Update Services" <<Service>> {
+    (Payment Processing) --> (Inventory Update)
+}
+
+rectangle "Shipping Detail Services" <<Service>> {
+    (Inventory Update) --> (Shipping Details)
+}
+
+rectangle "Customer Notification Services" <<Service>> {
+    (Shipping Details) --> (Customer Notification)
+    Customer <-- (Customer Notification) : "Send Notification"
+}
+
+@enduml

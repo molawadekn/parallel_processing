@@ -1,0 +1,20 @@
+@startuml
+skinparam rectangle {
+    BackgroundColor<<Bottleneck>> LightCoral
+}
+
+rectangle "Order Queue" as OrderQueue
+
+rectangle "Order Validation" <<Bottleneck>> as OrderValidation
+rectangle "Payment Processing" <<Bottleneck>> as PaymentProcessing
+rectangle "Inventory Update" <<Bottleneck>> as InventoryUpdate
+rectangle "Shipping Details Generation" <<Bottleneck>> as ShippingDetailsGeneration
+rectangle "Order Fulfillment" as OrderFulfillment
+
+OrderQueue --> OrderValidation
+OrderValidation --> PaymentProcessing
+PaymentProcessing --> InventoryUpdate
+InventoryUpdate --> ShippingDetailsGeneration
+ShippingDetailsGeneration --> OrderFulfillment
+
+@enduml
